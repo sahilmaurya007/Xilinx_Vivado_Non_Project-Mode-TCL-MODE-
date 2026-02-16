@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivado RTL Masterclass | Sahil Maurya</title>
+    <style>
+        :root { --navy: #002147; --royal: #0056b3; --cyan: #00d4ff; --bg: #f4f7fc; --code-bg: #1a1a1a; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        .navbar { background: linear-gradient(135deg, var(--navy), var(--royal)); color: white; padding: 50px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .scholar-badge { margin-top: 15px; display: inline-block; padding: 8px 30px; border: 2px solid var(--cyan); border-radius: 50px; font-weight: bold; color: var(--cyan); }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .step-card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.08); border-left: 10px solid var(--royal); }
+        h2 { color: var(--navy); border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        .tcl-panel { background: var(--code-bg); color: #4ef037; padding: 15px; border-radius: 8px; font-family: 'Consolas', monospace; display: flex; justify-content: space-between; align-items: center; margin: 10px 0; border: 1px solid #333; }
+        .copy-btn { background: var(--royal); color: white; border: none; padding: 7px 15px; border-radius: 5px; cursor: pointer; transition: 0.3s; font-size: 0.85em; min-width: 90px; }
+        .copy-btn:hover { background: var(--cyan); color: var(--navy); transform: scale(1.05); }
+        .code-preview { background: #fdf6e3; border: 1px dashed #b58900; padding: 20px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; margin: 15px 0; font-size: 0.95em; position: relative; }
+        .note { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        footer { background: var(--navy); color: white; text-align: center; padding: 40px; margin-top: 60px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>FPGA Implementation Mastery</h1>
+    <div class="scholar-badge">Made by Sahil Maurya | Research Scholar, IIT Mandi</div>
+    <p style="margin-top:20px; opacity: 0.9;">Non-Project Mode Line-by-Line Tcl Guide</p>
+</div>
+
+<div class="container">
+
+    <div class="step-card">
+        <h2>📂 0. Workspace & Directory Setup</h2>
+        <div class="tcl-panel"><span id="c0a">cd C:/Users/shiva</span><button class="copy-btn" onclick="copyTag('c0a')">Copy</button></div>
+        <div class="tcl-panel"><span id="c0b">file mkdir FullAdder_Project</span><button class="copy-btn" onclick="copyTag('c0b')">Copy</button></div>
+        <div class="tcl-panel"><span id="c0c">cd FullAdder_Project</span><button class="copy-btn" onclick="copyTag('c0c')">Copy</button></div>
+        <div class="tcl-panel"><span id="c0d">pwd</span><button class="copy-btn" onclick="copyTag('c0d')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>📝 1. Initialize Project Files</h2>
+        <p>Inhe ek-ek karke copy karein Notepad open karne ke liye:</p>
+        <div class="tcl-panel"><span id="n1">exec cmd /c start notepad full_adder.v &</span><button class="copy-btn" onclick="copyTag('n1')">Copy</button></div>
+        <div class="tcl-panel"><span id="n2">exec cmd /c start notepad tb_full_adder.v &</span><button class="copy-btn" onclick="copyTag('n2')">Copy</button></div>
+        <div class="tcl-panel"><span id="n3">exec cmd /c start notepad constraints.xdc &</span><button class="copy-btn" onclick="copyTag('n3')">Copy</button></div>
+        <div class="note">⚠️ Notepad close karne ke baad TCL console mein wapas aane ke liye Enter press karein</div>
+    </div>
+
+    <div class="step-card">
+        <h2>💻 2. Design Code (full_adder.v)</h2>
+        <div class="code-preview" id="v_code">`timescale 1ns / 1ps
+module full_adder(
+    input a, 
+    input b, 
+    input cin, 
+    output sum, 
+    output cout
+    );
+    assign sum = a ^ b ^ cin;
+    assign cout = (a & b) | (b & cin) | (a & cin);
+endmodule</div>
+        <button class="copy-btn" onclick="copyTag('v_code')">Copy Verilog</button>
+    </div>
+
+    <div class="step-card">
+        <h2>🧪 3. Testbench Code (tb_full_adder.v)</h2>
+        <div class="code-preview" id="tb_code">`timescale 1ns / 1ps
+module tb_full_adder();
+    reg a, b, cin; wire sum, cout;
+    full_adder dut (.a(a), .b(b), .cin(cin), .sum(sum), .cout(cout));
+    initial begin
+        $display("========================================");
+        $display("FULL ADDER TESTBENCH STARTED");
+        $display("========================================");
+        $display("Time\t a\t b\t cin\t sum\t cout");
+        $display("----------------------------------------");
+        $monitor("%0t\t %b\t %b\t %b\t %b\t %b", $time, a, b, cin, sum, cout);
+        
+        {a, b, cin} = 3'b000; #10;
+        {a, b, cin} = 3'b001; #10;
+        {a, b, cin} = 3'b010; #10;
+        {a, b, cin} = 3'b011; #10;
+        {a, b, cin} = 3'b100; #10;
+        {a, b, cin} = 3'b101; #10;
+        {a, b, cin} = 3'b110; #10;
+        {a, b, cin} = 3'b111; #10;
+        
+        $display("----------------------------------------");
+        $display("TEST COMPLETED AT %0t ns", $time);
+        $display("========================================");
+        $finish;
+    end
+endmodule</div>
+        <button class="copy-btn" onclick="copyTag('tb_code')">Copy Testbench</button>
+    </div>
+
+    <div class="step-card">
+        <h2>📍 4. Constraints (constraints.xdc)</h2>
+        <div class="code-preview" id="xdc_code">set_property -dict { PACKAGE_PIN G15 IOSTANDARD LVCMOS33 } [get_ports a]
+set_property -dict { PACKAGE_PIN P15 IOSTANDARD LVCMOS33 } [get_ports b]
+set_property -dict { PACKAGE_PIN W13 IOSTANDARD LVCMOS33 } [get_ports cin]
+set_property -dict { PACKAGE_PIN M14 IOSTANDARD LVCMOS33 } [get_ports sum]
+set_property -dict { PACKAGE_PIN M15 IOSTANDARD LVCMOS33 } [get_ports cout]</div>
+        <button class="copy-btn" onclick="copyTag('xdc_code')">Copy XDC</button>
+    </div>
+
+    <div class="step-card">
+        <h2>📈 5. Functional Simulation</h2>
+        <div class="tcl-panel"><span id="s1">create_project -force sim_temp ./sim_temp -part xc7z010clg400-1</span><button class="copy-btn" onclick="copyTag('s1')">Copy</button></div>
+        <div class="tcl-panel"><span id="s2">add_files full_adder.v tb_full_adder.v</span><button class="copy-btn" onclick="copyTag('s2')">Copy</button></div>
+        <div class="tcl-panel"><span id="s3">set_property top tb_full_adder [current_fileset -sim]</span><button class="copy-btn" onclick="copyTag('s3')">Copy</button></div>
+        <div class="tcl-panel"><span id="s4">launch_simulation</span><button class="copy-btn" onclick="copyTag('s4')">Copy</button></div>
+        <div class="tcl-panel"><span id="s5">run all</span><button class="copy-btn" onclick="copyTag('s5')">Copy</button></div>
+        <div class="tcl-panel"><span id="s6">start_gui</span><button class="copy-btn" onclick="copyTag('s6')">Copy</button></div>
+        <div class="tcl-panel"><span id="s7"># Wapas TCL console mein aane ke liye</span><button class="copy-btn" onclick="copyTag('s7')">Copy</button></div>
+        <div class="tcl-panel"><span id="s8">exit</span><button class="copy-btn" onclick="copyTag('s8')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>⚙️ 6. Implementation Initialization</h2>
+        <div class="tcl-panel"><span id="i1">close_project</span><button class="copy-btn" onclick="copyTag('i1')">Copy</button></div>
+        <div class="tcl-panel"><span id="i2">read_verilog full_adder.v</span><button class="copy-btn" onclick="copyTag('i2')">Copy</button></div>
+        <div class="tcl-panel"><span id="i3">read_xdc constraints.xdc</span><button class="copy-btn" onclick="copyTag('i3')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>🛠️ 7. Synthesis</h2>
+        <div class="tcl-panel"><span id="i4">synth_design -top full_adder -part xc7z010clg400-1</span><button class="copy-btn" onclick="copyTag('i4')">Copy</button></div>
+        <div class="tcl-panel"><span id="i5"># Synthesis complete - Press Enter to continue</span><button class="copy-btn" onclick="copyTag('i5')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>⚡ 8. Implementation Flow</h2>
+        <div class="tcl-panel"><span id="i6">opt_design</span><button class="copy-btn" onclick="copyTag('i6')">Copy</button></div>
+        <div class="tcl-panel"><span id="i7">place_design</span><button class="copy-btn" onclick="copyTag('i7')">Copy</button></div>
+        <div class="tcl-panel"><span id="i8">route_design</span><button class="copy-btn" onclick="copyTag('i8')">Copy</button></div>
+        <div class="tcl-panel"><span id="i9"># Implementation complete - Press Enter</span><button class="copy-btn" onclick="copyTag('i9')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>📊 9. All Reports in TXT Format</h2>
+        <div class="tcl-panel"><span id="r1"># Utilization Reports</span><button class="copy-btn" onclick="copyTag('r1')">Copy</button></div>
+        <div class="tcl-panel"><span id="r2">report_utilization -file utilization_pre_synth.txt</span><button class="copy-btn" onclick="copyTag('r2')">Copy</button></div>
+        <div class="tcl-panel"><span id="r3">report_utilization -hierarchical -file utilization_hierarchical.txt</span><button class="copy-btn" onclick="copyTag('r3')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r4"># Timing Reports</span><button class="copy-btn" onclick="copyTag('r4')">Copy</button></div>
+        <div class="tcl-panel"><span id="r5">report_timing_summary -file timing_summary.txt</span><button class="copy-btn" onclick="copyTag('r5')">Copy</button></div>
+        <div class="tcl-panel"><span id="r6">report_timing -nworst 10 -file timing_nworst10.txt</span><button class="copy-btn" onclick="copyTag('r6')">Copy</button></div>
+        <div class="tcl-panel"><span id="r7">report_timing -delay_type min_max -file timing_min_max.txt</span><button class="copy-btn" onclick="copyTag('r7')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r8"># Power Reports</span><button class="copy-btn" onclick="copyTag('r8')">Copy</button></div>
+        <div class="tcl-panel"><span id="r9">report_power -file power_analysis.txt</span><button class="copy-btn" onclick="copyTag('r9')">Copy</button></div>
+        <div class="tcl-panel"><span id="r10">report_power -hierarchical -file power_hierarchical.txt</span><button class="copy-btn" onclick="copyTag('r10')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r11"># Clock Reports</span><button class="copy-btn" onclick="copyTag('r11')">Copy</button></div>
+        <div class="tcl-panel"><span id="r12">report_clock_utilization -file clock_utilization.txt</span><button class="copy-btn" onclick="copyTag('r12')">Copy</button></div>
+        <div class="tcl-panel"><span id="r13">report_clock_interaction -file clock_interaction.txt</span><button class="copy-btn" onclick="copyTag('r13')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r14"># DRC and Methodology Reports</span><button class="copy-btn" onclick="copyTag('r14')">Copy</button></div>
+        <div class="tcl-panel"><span id="r15">report_drc -file drc_report.txt</span><button class="copy-btn" onclick="copyTag('r15')">Copy</button></div>
+        <div class="tcl-panel"><span id="r16">report_methodology -file methodology_report.txt</span><button class="copy-btn" onclick="copyTag('r16')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r17"># Post-Implementation Reports</span><button class="copy-btn" onclick="copyTag('r17')">Copy</button></div>
+        <div class="tcl-panel"><span id="r18">report_utilization -file post_impl_utilization.txt</span><button class="copy-btn" onclick="copyTag('r18')">Copy</button></div>
+        <div class="tcl-panel"><span id="r19">report_timing -file post_impl_timing.txt</span><button class="copy-btn" onclick="copyTag('r19')">Copy</button></div>
+        <div class="tcl-panel"><span id="r20">report_power -file post_impl_power.txt</span><button class="copy-btn" onclick="copyTag('r20')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="r21"># Summary Report</span><button class="copy-btn" onclick="copyTag('r21')">Copy</button></div>
+        <div class="tcl-panel"><span id="r22">report_qor_suggestions -file qor_suggestions.txt</span><button class="copy-btn" onclick="copyTag('r22')">Copy</button></div>
+        <div class="tcl-panel"><span id="r23">show_schematic [get_cells]</span><button class="copy-btn" onclick="copyTag('r23')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>⏱️ 10. Delay Check Commands</h2>
+        <div class="tcl-panel"><span id="d1"># Path Delay Analysis</span><button class="copy-btn" onclick="copyTag('d1')">Copy</button></div>
+        <div class="tcl-panel"><span id="d2">report_timing -delay_type min -file min_delay.txt</span><button class="copy-btn" onclick="copyTag('d2')">Copy</button></div>
+        <div class="tcl-panel"><span id="d3">report_timing -delay_type max -file max_delay.txt</span><button class="copy-btn" onclick="copyTag('d3')">Copy</button></div>
+        <div class="tcl-panel"><span id="d4">report_timing -from [all_inputs] -to [all_outputs] -file io_delay.txt</span><button class="copy-btn" onclick="copyTag('d4')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="d5"># Critical Path Analysis</span><button class="copy-btn" onclick="copyTag('d5')">Copy</button></div>
+        <div class="tcl-panel"><span id="d6">report_timing -nworst 20 -file critical_paths.txt</span><button class="copy-btn" onclick="copyTag('d6')">Copy</button></div>
+        <div class="tcl-panel"><span id="d7">report_timing -max_paths 10 -file top_10_paths.txt</span><button class="copy-btn" onclick="copyTag('d7')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="d8"># Slack Analysis</span><button class="copy-btn" onclick="copyTag('d8')">Copy</button></div>
+        <div class="tcl-panel"><span id="d9">report_timing_summary -setup -file setup_slack.txt</span><button class="copy-btn" onclick="copyTag('d9')">Copy</button></div>
+        <div class="tcl-panel"><span id="d10">report_timing_summary -hold -file hold_slack.txt</span><button class="copy-btn" onclick="copyTag('d10')">Copy</button></div>
+        
+        <div class="tcl-panel"><span id="d11"># Clock Path Delay</span><button class="copy-btn" onclick="copyTag('d11')">Copy</button></div>
+        <div class="tcl-panel"><span id="d12">report_clock_paths -file clock_path_delay.txt</span><button class="copy-btn" onclick="copyTag('d12')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>🛰️ 11. Generate Bitstream</h2>
+        <div class="tcl-panel"><span id="b1">write_bitstream -force full_adder.bit</span><button class="copy-btn" onclick="copyTag('b1')">Copy</button></div>
+        <div class="tcl-panel"><span id="b2">write_bitstream -force -bin_file full_adder.bin</span><button class="copy-btn" onclick="copyTag('b2')">Copy</button></div>
+        <div class="tcl-panel"><span id="b3"># Bitstream generated - Press Enter</span><button class="copy-btn" onclick="copyTag('b3')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>🔌 12. Hardware Programming</h2>
+        <div class="tcl-panel"><span id="p1">open_hw_manager</span><button class="copy-btn" onclick="copyTag('p1')">Copy</button></div>
+        <div class="tcl-panel"><span id="p2">connect_hw_server</span><button class="copy-btn" onclick="copyTag('p2')">Copy</button></div>
+        <div class="tcl-panel"><span id="p3">open_hw_target</span><button class="copy-btn" onclick="copyTag('p3')">Copy</button></div>
+        <div class="tcl-panel"><span id="p4">set_property PROGRAM.FILE {full_adder.bit} [lindex [get_hw_devices] 1]</span><button class="copy-btn" onclick="copyTag('p4')">Copy</button></div>
+        <div class="tcl-panel"><span id="p5">program_hw_devices [lindex [get_hw_devices] 1]</span><button class="copy-btn" onclick="copyTag('p5')">Copy</button></div>
+        <div class="tcl-panel"><span id="p6"># Programming complete - Press Enter</span><button class="copy-btn" onclick="copyTag('p6')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>🔄 13. Back to Vivado TCL Prompt</h2>
+        <div class="tcl-panel"><span id="b10"># GUI se TCL console mein wapas aane ke liye</span><button class="copy-btn" onclick="copyTag('b10')">Copy</button></div>
+        <div class="tcl-panel"><span id="b11">exit</span><button class="copy-btn" onclick="copyTag('b11')">Copy</button></div>
+        <div class="tcl-panel"><span id="b12"># Ya Ctrl+C press karein</span><button class="copy-btn" onclick="copyTag('b12')">Copy</button></div>
+        <div class="tcl-panel"><span id="b13"># TCL shell mein wapas aane ke liye Enter press karein</span><button class="copy-btn" onclick="copyTag('b13')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>📋 14. View All Generated Reports</h2>
+        <div class="tcl-panel"><span id="v1"># List all report files</span><button class="copy-btn" onclick="copyTag('v1')">Copy</button></div>
+        <div class="tcl-panel"><span id="v2">glob *.txt</span><button class="copy-btn" onclick="copyTag('v2')">Copy</button></div>
+        <div class="tcl-panel"><span id="v3"># View specific report</span><button class="copy-btn" onclick="copyTag('v3')">Copy</button></div>
+        <div class="tcl-panel"><span id="v4">set f [open "timing_summary.txt" r]; puts [read \$f]; close \$f</span><button class="copy-btn" onclick="copyTag('v4')">Copy</button></div>
+        <div class="tcl-panel"><span id="v5">set f [open "post_impl_utilization.txt" r]; puts [read \$f]; close \$f</span><button class="copy-btn" onclick="copyTag('v5')">Copy</button></div>
+    </div>
+
+    <div class="step-card">
+        <h2>🧹 15. Cleanup Commands</h2>
+        <div class="tcl-panel"><span id="cl1"># Close current project</span><button class="copy-btn" onclick="copyTag('cl1')">Copy</button></div>
+        <div class="tcl-panel"><span id="cl2">close_project</span><button class="copy-btn" onclick="copyTag('cl2')">Copy</button></div>
+        <div class="tcl-panel"><span id="cl3"># Clear console</span><button class="copy-btn" onclick="copyTag('cl3')">Copy</button></div>
+        <div class="tcl-panel"><span id="cl4">puts "Vivado TCL Shell Ready - [pwd]"</span><button class="copy-btn" onclick="copyTag('cl4')">Copy</button></div>
+    </div>
+
+</div>
+
+<footer>
+    <h3>Sahil Maurya | SCEE, IIT Mandi</h3>
+    <p>VLSI Design | Hardware Security | Post-Quantum Cryptography</p>
+    <p>© 2026. All Rights Reserved.</p>
+</footer>
+
+<script>
+    function copyTag(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied to clipboard!");
+        });
+    }
+</script>
+
+</body>
+</html>
